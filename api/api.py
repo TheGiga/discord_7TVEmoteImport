@@ -66,7 +66,7 @@ class EmotesAPI:
         fitting_emote_name = self._get_fitting_emote_name(emote_json["host"]["files"], animated)
         fitting_emote_url = f"https:{emote_json['host']['url']}/{fitting_emote_name}"
 
-        if not fitting_emote_url:
+        if not fitting_emote_name:
             raise FailedToFindFittingEmote
 
         r = await self._session.get(fitting_emote_url)

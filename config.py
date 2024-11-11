@@ -9,12 +9,13 @@ LOGGING_LEVEL = logging.INFO
 EMOJI_SIZE_LIMIT: int = 256000 # in bytes
 
 # These commands cannot be assigned custom permissions. Discord-based perms are used.
-IGNORED_COMMANDS_FOR_PERMISSIONS_OVERRIDES: list[str] = ["permissions set"]
+IGNORED_COMMANDS_FOR_PERMISSIONS_OVERRIDES: list[str] = ["permissions reject", "permissions allow"]
 
 # Either or not the command should be available for everyone by default
 # (p.s all the commands that are not in this list are defaulted to False)
 DEFAULT_PERMISSIONS: dict[str: bool] = {
-    "7tv addemote from_url": False
+    "7tv addemote from_url": False,
+    "permissions list": True
 }
 
 # Should permission overrides be ignored if the user has administrator permissions.

@@ -70,7 +70,7 @@ async def commands_list_autocomplete(ctx: discord.AutocompleteContext):
     return [
         cmd for cmd in qualified_commands_list()
         if cmd not in config.IGNORED_COMMANDS_FOR_PERMISSIONS_OVERRIDES
-        and cmd.startswith(ctx.value)
+           and cmd.startswith(ctx.value)
     ]
 
 
@@ -104,8 +104,6 @@ async def send_error_response(ctx, error, custom_message: str = None, ephemeral:
 
 @bot.event
 async def on_application_command_error(ctx: discord.ApplicationContext, error):
-    print(type(error))
-
     if isinstance(error, MissingPermissions):
         return await send_error_response(
             ctx, error, f"Bot lacks permissions: `{error.missing_permissions}`"
@@ -113,7 +111,7 @@ async def on_application_command_error(ctx: discord.ApplicationContext, error):
 
     elif isinstance(error, EmoteNotFound):
         return await send_error_response(
-            ctx, error, f":x: **Emote Not Found!**"
+            ctx, error, f":x: **Emote Not Found!**\nMake sure the URL you provided is correct!"
         )
 
     elif isinstance(error, EmoteBytesReadFail):
@@ -139,34 +137,94 @@ async def on_application_command_error(ctx: discord.ApplicationContext, error):
         raise error
 
 
-@command_group_permissions.command(name="set")
+@command_group_permissions.command(
+    name="allow", description="Enable access for a user/role to a specific command."
+)
 @has_permissions(administrator=True)
-async def permissions_set(
+async def permissions_allow(
         ctx: discord.ApplicationContext,
-        target: discord.Option(discord.abc.Mentionable, description="Role or User to set permissions for."),
+        target: discord.Option(discord.abc.Mentionable, description="Allow Role or User to use the command."),
         command: discord.Option(
-            description="Command to set permissions for. (uses qualified command name, f.e `permissions set`)",
+            description="Command to set permissions for. (uses qualified command name, f.e `permissions allow`)",
             autocomplete=commands_list_autocomplete
-        ),
-        value: discord.Option(bool)
+        )
 ):
     if command not in qualified_commands_list():
         return await ctx.respond(f":x: There is no such command! `/{command}`", ephemeral=True)
 
     await ctx.defer(ephemeral=True)
 
-    await PermissionsOverride.register_permission(target=target, command=command, allowed=value)
+    await PermissionsOverride.register_permission(target=target, command=command, value=True)
     await ctx.respond(
-        f"Successfully set {target.mention} permissions for `/{command}` to **`{value}`**.", ephemeral=True
+        f"**Successfully allowed {target.mention} to use `/{command}`**.", ephemeral=True
     )
 
 
-@command_subgroup_7tv_addemote.command(name="from_url")
+@command_group_permissions.command(
+    name="reject", description="Disable access for a user/role to a specific command."
+)
+@has_permissions(administrator=True)
+async def permissions_reject(
+        ctx: discord.ApplicationContext,
+        target: discord.Option(discord.abc.Mentionable, description="Allow Role or User to use the command."),
+        command: discord.Option(
+            description="Command to set permissions for. (uses qualified command name, f.e `permissions allow`)",
+            autocomplete=commands_list_autocomplete
+        )
+):
+    if command not in qualified_commands_list():
+        return await ctx.respond(f":x: There is no such command! `/{command}`", ephemeral=True)
+
+    await ctx.defer(ephemeral=True)
+
+    await PermissionsOverride.register_permission(target=target, command=command, value=False)
+    await ctx.respond(
+        f"**Successfully removed permissions to use `/{command}` for {target.mention}**.", ephemeral=True
+    )
+
+
+@command_group_permissions.command(name="list", description="Get the list of all custom permissions ")
+async def permissions_list(
+        ctx: discord.ApplicationContext,
+        command: discord.Option(
+            description="Command to set permissions for. (uses qualified command name, f.e `permissions set`)",
+            autocomplete=commands_list_autocomplete
+        )
+):
+    if command not in qualified_commands_list():
+        return await ctx.respond(f":x: There is no such command! `/{command}`", ephemeral=True)
+
+    overrides = await PermissionsOverride.command_permissions(command)
+
+    if len(overrides["role"]) + len(overrides["user"]) < 1:
+        await ctx.respond(f"There is no custom permissions for command `/{command}`", ephemeral=True)
+        return
+
+    embed = discord.Embed(title=f"Custom permissions for `/{command}`", color=discord.Color.embed_background())
+    embed.description = "*If role/user is in the list - it has permissions to use the command.*"
+
+    if len(overrides["role"]) > 0:
+        value = " ".join(f"<@&{item}>" for item in overrides["role"])
+
+        embed.add_field(name=f'Roles: ({len(overrides["role"])})', value=value)
+
+    if len(overrides["user"]) > 0:
+        value = " ".join(f"<@{item}>" for item in overrides["user"])
+
+        embed.add_field(name=f'Users: ({len(overrides["user"])})', value=value)
+
+    await ctx.respond(embed=embed)
+
+
+@command_subgroup_7tv_addemote.command(name="from_url", description="Import a 7TV emote from a url.")
 @bot_has_permissions(manage_emojis=True)
 async def addemote_from_url(
         ctx: discord.ApplicationContext,
         emote_url: discord.Option(name='url', description='Direct 7TV Emote URL'),
-        custom_name: discord.Option(description='Custom name for the emote (optional)', required=False) = None,
+        custom_name: discord.Option(
+            description='Custom name for the emote (optional) [alphanumeric & _ only]', required=False,
+            max_length=32, min_length=2
+        ) = None,
         limit_to_role: discord.Option(discord.Role, name='role', description="Limit to specific role!") = None
 ):
     if not await PermissionsOverride.check_custom_permissions(ctx):
@@ -218,7 +276,7 @@ async def addemote_from_url(
     embed.thumbnail = None
 
     await message.delete()
-    await ctx.respond(content=ctx.author.mention, embed=embed)
+    await ctx.send(content=ctx.author.mention, embed=embed)
 
 
 async def main():
