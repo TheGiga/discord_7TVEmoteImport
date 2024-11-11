@@ -9,7 +9,7 @@ LOGGING_LEVEL = logging.INFO
 EMOJI_SIZE_LIMIT: int = 256000 # in bytes
 
 # These commands cannot be assigned custom permissions. Discord-based (based on role and user perms) perms are used.
-IGNORED_COMMANDS_FOR_PERMISSIONS_OVERRIDES: list[str] = ["permissions reject", "permissions allow", "permissions list"]
+IGNORED_COMMANDS_FOR_PERMISSIONS_OVERRIDES: list[str] = ["permissions remove", "permissions allow", "permissions list"]
 
 # Either or not the command should be available for everyone, ignoring any overrides
 # (p.s all the commands that are not in this list are defaulted to False)
