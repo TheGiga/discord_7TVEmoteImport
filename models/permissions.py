@@ -30,7 +30,7 @@ class PermissionsOverride(Model):
     async def check_for(cls, target: discord.Member | discord.Role, command: str | discord.ApplicationCommand) -> bool:
         target_type: str = "role" if type(target) is discord.Role else "user"
         target_discord_permissions: discord.Permissions = \
-            target.permissions if target_type == "role" else target.guild_permissions
+            target.guild_permissions if target_type == "user" else target.permissions
         command_name = command if type(command) is str else command.qualified_name
 
         if not target_discord_permissions.administrator and config.IGNORE_OVERRIDES_IF_ADMINISTRATOR:
