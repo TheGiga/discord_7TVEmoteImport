@@ -33,7 +33,7 @@ class PermissionsOverride(Model):
             target.guild_permissions if target_type == "user" else target.permissions
         command_name = command if type(command) is str else command.qualified_name
 
-        if not target_discord_permissions.administrator and config.IGNORE_OVERRIDES_IF_ADMINISTRATOR:
+        if target_discord_permissions.administrator and config.IGNORE_OVERRIDES_IF_ADMINISTRATOR:
             return True
 
         override, _ = await cls.get_or_create(guild_id=target.guild.id)
