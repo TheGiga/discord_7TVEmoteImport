@@ -2,7 +2,7 @@
 
 - Import an emote using a 7TV Url *(f.e https://7tv.app/emotes/01F6NCKMP000052X5637DW2XDY)*
 - Custom permissions using `/permissions`
-> *If you want to use discord's built-in permissions, just set every command default permission to `True` in config.py*
+> *If you want to use discord's built-in permissions manager from Integrations menu, just set every command default permission to `True` in config.py*
 - Basic configuration in `config.py`
 
 ### To self-host.
