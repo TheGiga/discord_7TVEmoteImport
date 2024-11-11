@@ -42,9 +42,10 @@ class PermissionsOverride(Model):
         if not guild_permissions_list:
             return bool(config.DEFAULT_PERMISSIONS.get(command_name))
 
-        target_list: list[int] = guild_permissions_list[target_type]
+        target_list_role: list[int] = guild_permissions_list["role"]
+        target_list_user: list[int] = guild_permissions_list["user"]
 
-        if target.id in target_list:
+        if target.id in target_list_user or target.id in target_list_role:
             return True
 
         return False
