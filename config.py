@@ -5,4 +5,22 @@ SEVEN_TV_API_VERSION: str = "v3"
 
 LOGGING_LEVEL = logging.INFO
 
-EMOJI_SIZE_LIMIT: int = 256000
+# Discord emoji size limit, it *should* be 256kb
+EMOJI_SIZE_LIMIT: int = 256000 # in bytes
+
+# These commands cannot be assigned custom permissions. Discord-based perms are used.
+IGNORED_COMMANDS_FOR_PERMISSIONS_OVERRIDES: list[str] = ["permissions set"]
+
+# Either or not the command should be available for everyone by default
+# (p.s all the commands that are not in this list are defaulted to False)
+DEFAULT_PERMISSIONS: dict[str: bool] = {
+    "7tv addemote from_url": False
+}
+
+# Should permission overrides be ignored if the user has administrator permissions.
+IGNORE_OVERRIDES_IF_ADMINISTRATOR: bool = True
+
+DEFAULT_PERMISSIONS_VALUE_JSON = {
+    "role": [],  # ID of the role
+    "user": []  # same as above, but user
+}
