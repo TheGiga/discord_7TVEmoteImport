@@ -8,10 +8,10 @@ LOGGING_LEVEL = logging.INFO
 # Discord emoji size limit, it *should* be 256kb
 EMOJI_SIZE_LIMIT: int = 256000 # in bytes
 
-# These commands cannot be assigned custom permissions. Discord-based perms are used.
-IGNORED_COMMANDS_FOR_PERMISSIONS_OVERRIDES: list[str] = ["permissions reject", "permissions allow"]
+# These commands cannot be assigned custom permissions. Discord-based (based on role and user perms) perms are used.
+IGNORED_COMMANDS_FOR_PERMISSIONS_OVERRIDES: list[str] = ["permissions reject", "permissions allow", "permissions list"]
 
-# Either or not the command should be available for everyone by default
+# Either or not the command should be available for everyone, ignoring any overrides
 # (p.s all the commands that are not in this list are defaulted to False)
 DEFAULT_PERMISSIONS: dict[str: bool] = {
     "7tv addemote from_url": False,
