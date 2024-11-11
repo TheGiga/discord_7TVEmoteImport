@@ -45,8 +45,12 @@ class PermissionsOverride(Model):
         target_list_role: list[int] = guild_permissions_list["role"]
         target_list_user: list[int] = guild_permissions_list["user"]
 
-        if target.id in target_list_user or target.id in target_list_role:
+        if target.id in target_list_user:
             return True
+
+        if type(target) is discord.Member:
+            if any(item.id in target_list_role for item in target.roles):
+                return True
 
         return False
 
