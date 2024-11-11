@@ -78,13 +78,13 @@ async def send_missing_custom_permissions_message(ctx: discord.ApplicationContex
     try:
         await ctx.respond(
             content=":x: **You are not allowed to use this command!**\n"
-                    "*Admins can use `/permissions set` to configure custom permissions.*",
+                    "*Admins can use `/permissions allow` to configure custom permissions.*",
             ephemeral=True
         )
     except discord.NotFound:
         await ctx.respond(
             content=":x: **You are not allowed to use this command!**\n"
-                    "*Admins can use `/permissions set` to configure custom permissions.*",
+                    "*Admins can use `/permissions allow` to configure custom permissions.*",
         )
     except discord.HTTPException:
         pass
@@ -161,10 +161,10 @@ async def permissions_allow(
 
 
 @command_group_permissions.command(
-    name="reject", description="Disable access for a user/role to a specific command."
+    name="remove", description="Remove custom permissions for a user/role to a specific command."
 )
 @has_permissions(administrator=True)
-async def permissions_reject(
+async def permissions_remove(
         ctx: discord.ApplicationContext,
         target: discord.Option(discord.abc.Mentionable, description="Allow Role or User to use the command."),
         command: discord.Option(
