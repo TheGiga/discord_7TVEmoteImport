@@ -9,4 +9,6 @@
 2. Install python 3.11+ (https://python.org)
    - Also consider creating a virtual environment (https://docs.python.org/3/library/venv.html)
 3. Install requirements `pip install -r -U requirements.txt`
-4. Run main.py `python main.py`
+4. Create a file named `.env` and put your apps token here, like shown in `.env.example` -> *TOKEN=token*
+5. Check configs in config.py (you might wanna edit default permissions for commands, i guess)
+6. Run main.py `python main.py`
