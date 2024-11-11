@@ -19,9 +19,9 @@ class PermissionsOverride(Model):
     ) -> dict[str: list]:
         command_name = command if type(command) is str else command.qualified_name
 
-        override = await cls.get_or_none(guild_id=guild.id)
+        override, _ = await cls.get_or_create(guild_id=guild.id)
 
-        if not override:
+        if not override.permissions.get(command):
             return config.DEFAULT_PERMISSIONS_VALUE_JSON
 
         return override.permissions.get(command_name)
@@ -36,7 +36,7 @@ class PermissionsOverride(Model):
         if not target_discord_permissions.administrator and config.IGNORE_OVERRIDES_IF_ADMINISTRATOR:
             return True
 
-        override = await cls.get_or_none(guild_id=target.guild.id)
+        override, _ = await cls.get_or_create(guild_id=target.guild.id)
         guild_permissions_list = override.permissions.get(command_name)
 
         if not guild_permissions_list:
