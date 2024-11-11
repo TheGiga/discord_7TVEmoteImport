@@ -194,10 +194,10 @@ async def permissions_list(
     if command not in qualified_commands_list():
         return await ctx.respond(f":x: There is no such command! `/{command}`", ephemeral=True)
 
-    overrides = await PermissionsOverride.command_permissions(command)
+    overrides = await PermissionsOverride.command_permissions(ctx.guild, command)
 
     if len(overrides["role"]) + len(overrides["user"]) < 1:
-        await ctx.respond(f"There is no custom permissions for command `/{command}`", ephemeral=True)
+        await ctx.respond(f"There are no custom permissions for command `/{command}`", ephemeral=True)
         return
 
     embed = discord.Embed(title=f"Custom permissions for `/{command}`", color=discord.Color.embed_background())

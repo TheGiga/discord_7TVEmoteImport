@@ -6,22 +6,25 @@ from typing import Any
 
 
 class PermissionsOverride(Model):
-    command_name = fields.CharField(primary_key=True, unique=True, max_length=32)
-    permissions = fields.JSONField(default=config.DEFAULT_PERMISSIONS_VALUE_JSON)
+    #command_name = fields.CharField(primary_key=True, unique=True, max_length=32)
+    guild_id = fields.IntField(primary_key=True, unique=True)
+    permissions = fields.JSONField(default={})
 
     def __init__(self, **kwargs: Any):
         super().__init__(**kwargs)
 
     @classmethod
-    async def command_permissions(cls, command: str | discord.ApplicationCommand) -> dict[str: list]:
+    async def command_permissions(
+            cls, guild: discord.Guild, command: str | discord.ApplicationCommand
+    ) -> dict[str: list]:
         command_name = command if type(command) is str else command.qualified_name
 
-        override = await cls.get_or_none(command_name=command_name)
+        override = await cls.get_or_none(guild_id=guild.id)
 
         if not override:
             return config.DEFAULT_PERMISSIONS_VALUE_JSON
 
-        return override.permissions
+        return override.permissions.get(command_name)
 
     @classmethod
     async def check_for(cls, target: discord.Member | discord.Role, command: str | discord.ApplicationCommand) -> bool:
@@ -33,12 +36,13 @@ class PermissionsOverride(Model):
         if not target_discord_permissions.administrator and config.IGNORE_OVERRIDES_IF_ADMINISTRATOR:
             return True
 
-        override = await cls.get_or_none(command_name=command_name)
+        override = await cls.get_or_none(guild_id=target.guild.id)
+        guild_permissions_list = override.permissions.get(command_name)
 
-        if not override:
+        if not guild_permissions_list:
             return bool(config.DEFAULT_PERMISSIONS.get(command_name))
 
-        target_list: list[int] = override.permissions[target_type]
+        target_list: list[int] = guild_permissions_list[target_type]
 
         if target.id in target_list:
             return True
@@ -51,16 +55,17 @@ class PermissionsOverride(Model):
             value: bool = True
     ):
         target_type: str = "role" if type(target) is discord.Role else "user"
-        override, _ = await cls.get_or_create(command_name=command)
+        override, _ = await cls.get_or_create(guild_id=target.guild.id)
 
-        permissions_list: list[int] = override.permissions[target_type]
+        if not override.permissions.get(command):
+            override.permissions[command] = config.DEFAULT_PERMISSIONS_VALUE_JSON
 
         if value:
-            if target.id not in permissions_list:
-                permissions_list.append(target.id)
+            if target.id not in override.permissions[command][target_type]:
+                override.permissions[command][target_type].append(target.id)
         else:
-            if target.id in permissions_list:
-                permissions_list.remove(target.id)
+            if target.id in override.permissions[command][target_type]:
+                override.permissions[command][target_type].remove(target.id)
 
         await override.save()
 
