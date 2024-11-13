@@ -248,7 +248,9 @@ async def permissions_list(
     await ctx.respond(embed=embed)
 
 
-@command_subgroup_7tv_emote.command(name="from_url", description="Import a 7TV emote from a url.")
+@command_subgroup_7tv_emote.command(
+    name="from_url", description="Import a 7TV emote from a url. (Consider using emotes that weigh under 256kb)"
+)
 @bot_has_permissions(manage_emojis=True)
 async def emote_from_url(
         ctx: SubApplicationContext,
@@ -271,7 +273,7 @@ async def emote_from_url(
 
     emote_id = emote_url.split("/")[-1]
     try:
-        emote = await api.emote_get(emote_id)
+        emote = await api.emote_get(emote_id, stretch_to_fit)
     except Exception as e:
         await bot.on_application_command_error(ctx, e)  # type: ignore
         return
@@ -282,8 +284,6 @@ async def emote_from_url(
         uses_custom_name = False
 
     custom_name = to_discord_emoji_name(custom_name)
-
-    emote_bytes = format_emote_for_discord(emote.emote_bytes, stretch_to_fit)
 
     view = ConfirmationView()
 
@@ -311,7 +311,7 @@ async def emote_from_url(
         return await ctx.edit(embed=embed, view=view)
 
     discord_emote = await ctx.guild.create_custom_emoji(
-        name=custom_name, image=emote_bytes, roles=[limit_to_role] if limit_to_role else None,
+        name=custom_name, image=emote.emote_bytes, roles=[limit_to_role] if limit_to_role else None,
         reason=f'{ctx.author.name} ({ctx.author.id}) imported a 7TV Emote "{emote.name}" [{emote.id}]'
     )
     await ctx.guild_settings.register_emote(ctx.author, emote, discord_emote.id)

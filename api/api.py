@@ -1,5 +1,6 @@
 import aiohttp
 import config
+from image import format_emote_for_discord
 from . import Emote
 from .errors import *
 
@@ -13,7 +14,7 @@ class EmotesAPI:
     @staticmethod
     def _get_fitting_emote_name(files: dict, animated: bool) -> str | None:
         for i in reversed(range(1, 5)):
-            search_for = f"{i}x.png" if not animated else f"{i}x.gif"
+            search_for = f"{i}x.webp" if not animated else f"{i}x.gif"
 
             for file in files:
                 if not file.get("name") == search_for:
@@ -49,7 +50,7 @@ class EmotesAPI:
 
                 return response_json
 
-    async def emote_get(self, emote_id: str) -> Emote:
+    async def emote_get(self, emote_id: str, square_aspect_ratio=False) -> Emote:
         emote_json = await self._emote_get(emote_id=emote_id)
 
         if not emote_json:
@@ -70,10 +71,12 @@ class EmotesAPI:
         else:
             raise EmoteBytesReadFail(f"Failed reading bytes from {fitting_emote_url}")
 
+        emote_bytes = format_emote_for_discord(emote_bytes, square_aspect_ratio)
+
         return Emote(
             id=emote_json.get('id'),
             name=emote_json.get('name'),
-            format="gif" if animated else "png",
+            format="gif" if animated else "webp",
             animated=animated,
             emote_url=fitting_emote_url,
             emote_bytes=emote_bytes
