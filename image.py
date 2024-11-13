@@ -17,11 +17,10 @@ def format_emote_for_discord(initial_image_bytes, stretch: bool = False):
                     format="GIF",
                     save_all=True,
                     append_images=l_frames[1:],
-                    duration=image.info.get("duration", 100),
-                    disposal=2,
+                    disposal=2
                 )
             else:
-                img.save(output, format=format)
+                img.save(output, format="GIF")
             return output.getvalue()
 
     # Handle animated GIFs
@@ -57,4 +56,4 @@ def format_emote_for_discord(initial_image_bytes, stretch: bool = False):
         else:
             image_bytes = initial_image_bytes
 
-    return image_bytes
+        return image_bytes
