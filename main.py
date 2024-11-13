@@ -109,7 +109,7 @@ async def send_missing_custom_permissions_message(ctx: SubApplicationContext):
         pass
 
 
-async def send_error_response(ctx, error, custom_message: str = None, ephemeral: bool = False):
+async def send_error_response(ctx, error, custom_message: str = None, ephemeral: bool = True):
     try:
         await ctx.respond(
             content=f":x: Unexpected error: ```{error}```" if not custom_message else custom_message,
@@ -226,7 +226,7 @@ async def permissions_list(
     if command not in qualified_commands_list():
         return await ctx.respond(f":x: There is no such command! `/{command}`", ephemeral=True)
 
-    overrides = await ctx.guild_settings.get_command_permissions(ctx.guild, command)
+    overrides = await ctx.guild_settings.get_command_permissions(command)
 
     if len(overrides["role"]) + len(overrides["user"]) < 1:
         await ctx.respond(f"There are no custom permissions for command `/{command}`", ephemeral=True)
