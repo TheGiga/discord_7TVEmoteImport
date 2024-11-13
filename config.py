@@ -6,7 +6,7 @@ SEVEN_TV_API_VERSION: str = "v3"
 LOGGING_LEVEL = logging.INFO
 
 # Discord emoji size limit, it *should* be 256kb
-EMOJI_SIZE_LIMIT: int = 256000 # in bytes
+EMOJI_SIZE_LIMIT: int = 262144  # in bytes
 
 # These commands cannot be assigned custom permissions. Discord-based (based on role and user perms) perms are used.
 IGNORED_COMMANDS_FOR_PERMISSIONS_OVERRIDES: list[str] = ["permissions remove", "permissions allow", "permissions list"]

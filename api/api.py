@@ -13,10 +13,7 @@ class EmotesAPI:
     @staticmethod
     def _get_fitting_emote_name(files: dict, animated: bool) -> str | None:
         for i in reversed(range(1, 5)):
-            if animated:
-                search_for = f"{i}x.gif"
-            else:
-                search_for = f"{i}x.webp"
+            search_for = f"{i}x.png" if not animated else f"{i}x.gif"
 
             for file in files:
                 if not file.get("name") == search_for:
@@ -58,10 +55,7 @@ class EmotesAPI:
         if not emote_json:
             raise EmoteJSONReadFail(f"Failed to read JSON for emote `{emote_id}`, most likely Invalid URL!")
 
-        animated = False
-
-        if emote_json.get("animated") is True:
-            animated = True
+        animated = emote_json.get("animated", False)
 
         fitting_emote_name = self._get_fitting_emote_name(emote_json["host"]["files"], animated)
         fitting_emote_url = f"https:{emote_json['host']['url']}/{fitting_emote_name}"
@@ -79,8 +73,8 @@ class EmotesAPI:
         return Emote(
             id=emote_json.get('id'),
             name=emote_json.get('name'),
+            format="gif" if animated else "png",
             animated=animated,
             emote_url=fitting_emote_url,
             emote_bytes=emote_bytes
         )
-

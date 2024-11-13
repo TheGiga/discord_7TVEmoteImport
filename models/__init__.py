@@ -1,3 +1,3 @@
-from .permissions import PermissionsOverride
+from .guild_settings import GuildSettings
 
-__models__ = [PermissionsOverride]
+__models__ = [GuildSettings]
