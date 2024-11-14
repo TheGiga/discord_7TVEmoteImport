@@ -25,6 +25,7 @@ def format_emote_for_discord(initial_image_bytes, stretch: bool = False):
 
     # Handle animated GIFs
     if getattr(image, "is_animated", False):
+        print('wait')
         frames = []
         for frame in range(image.n_frames):
             image.seek(frame)
@@ -50,10 +51,11 @@ def format_emote_for_discord(initial_image_bytes, stretch: bool = False):
 
     # Handle static images (non-animated)
     else:
+        output = io.BytesIO()
+
         if stretch:
             image = image.resize((smaller_side, smaller_side))
-            image_bytes = image.tobytes()
-        else:
-            image_bytes = initial_image_bytes
 
-        return image_bytes
+        image.save(output, format="PNG")
+
+        return output.getvalue()
