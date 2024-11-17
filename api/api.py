@@ -75,7 +75,7 @@ class EmotesAPI:
 
         return Emote(
             id=emote_json.get('id'),
-            name=emote_json.get('name'),
+            name=emote_json.get('name')[:32],
             format="gif" if animated else "png",
             animated=animated,
             emote_url=fitting_emote_url,

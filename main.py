@@ -5,6 +5,7 @@ import logging
 from tortoise import connections
 from dotenv import load_dotenv
 from discord.ext.commands import MissingPermissions
+
 load_dotenv()
 
 import config
@@ -15,7 +16,6 @@ from ctx import SubApplicationContext
 from helpers import send_error_response
 from bot import bot
 from api import api_instance
-
 
 logging.basicConfig(level=config.LOGGING_LEVEL)
 

@@ -1,3 +1,5 @@
+from typing import Sequence
+
 import discord
 from discord import SlashCommandGroup
 from discord.ext.commands import bot_has_permissions
@@ -6,6 +8,7 @@ from api import api_instance
 from ctx import SubApplicationContext
 from helpers import send_missing_custom_permissions_message, to_discord_emoji_name, emote_list_autocomplete, \
     ConfirmationView
+from models import GuildSettings
 
 
 class EmotesCog(discord.Cog):
@@ -187,6 +190,20 @@ class EmotesCog(discord.Cog):
         )
 
         await ctx.respond(embed=embed, content=ctx.author.mention)
+
+    @discord.Cog.listener()
+    async def on_guild_emojis_update(
+            self, guild: discord.Guild, before: Sequence[discord.Emoji], after: Sequence[discord.Emoji]
+    ):
+        removed_emotes: list[discord.Emoji] = list(set(before) - set(after))
+
+        if len(removed_emotes) < 1:
+            return
+
+        guild_settngs, _ = await GuildSettings.get_or_create(guild_id=guild.id)
+
+        for emote in removed_emotes:
+            await guild_settngs.remove_emote(emote_id=emote.id)
 
 
 def setup(bot: discord.Bot):
