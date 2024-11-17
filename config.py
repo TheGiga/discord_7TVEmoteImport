@@ -14,7 +14,7 @@ IGNORED_COMMANDS_FOR_PERMISSIONS_OVERRIDES: list[str] = ["permissions remove", "
 # Either or not the command should be available for everyone, ignoring any overrides
 # (p.s all the commands that are not in this list are defaulted to False)
 DEFAULT_PERMISSIONS: dict[str: bool] = {
-    "7tv emote from_url": False,
+    "7tv emote add": False,
     "permissions list": True
 }
 
