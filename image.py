@@ -25,7 +25,6 @@ def format_emote_for_discord(initial_image_bytes, stretch: bool = False):
 
     # Handle animated GIFs
     if getattr(image, "is_animated", False):
-        print('wait')
         frames = []
         for frame in range(image.n_frames):
             image.seek(frame)

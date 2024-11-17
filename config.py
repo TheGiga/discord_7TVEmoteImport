@@ -25,3 +25,5 @@ DEFAULT_PERMISSIONS_VALUE_JSON = {
     "role": [],  # ID of the role
     "user": []  # same as above, but user
 }
+
+COGS: list[str] = ["permissions", "emotes"]
