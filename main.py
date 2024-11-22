@@ -55,7 +55,7 @@ async def on_application_command_error(ctx: SubApplicationContext, error):
         return await send_error_response(
             ctx, error, custom_message=f":x: Failed to find fitting emote!\n"
                                        f"Most likely all the emote variants exceed Discord's file size limit: "
-                                       f"`f{config.EMOJI_SIZE_LIMIT} bytes`"
+                                       f"`{config.EMOJI_SIZE_LIMIT} bytes`"
         )
 
     elif isinstance(error, EmoteJSONReadFail):

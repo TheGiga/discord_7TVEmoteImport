@@ -25,8 +25,8 @@ class EmotesCog(discord.Cog):
     async def emote_add(
             self, ctx: SubApplicationContext,
             emote_url: discord.Option(str, name='url', description='Direct 7TV Emote URL'),
-            stretch_to_fit: discord.Option(
-                bool, description="Stretches the emote to fit Square 1:1 Aspect Ratio",
+            fit_to_square: discord.Option(
+                bool, description="Makes the emote fit Square 1:1 Aspect Ratio",
             ),
             custom_name: discord.Option(
                 str, description='Custom name for the emote (optional) [alphanumeric & _ only]', required=False,
@@ -43,7 +43,7 @@ class EmotesCog(discord.Cog):
 
         emote_id = emote_url.split("/")[-1]
         try:
-            emote = await api_instance.emote_get(emote_id, stretch_to_fit)
+            emote = await api_instance.emote_get(emote_id, fit_to_square)
         except Exception as e:
             await self.bot.on_application_command_error(ctx, e)  # type: ignore
             return
@@ -66,7 +66,7 @@ class EmotesCog(discord.Cog):
         )
 
         embed.add_field(name='Custom Name', value=f"`{custom_name}`" if uses_custom_name else ":x:")
-        embed.add_field(name='Stretch To Fit', value=":white_check_mark:" if stretch_to_fit else ":x:")
+        embed.add_field(name='Fit to Square', value=":white_check_mark:" if fit_to_square else ":x:")
 
         if limit_to_role:
             embed.add_field(name='Limit To Role', value=limit_to_role.mention)

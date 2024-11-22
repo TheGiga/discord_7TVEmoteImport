@@ -1,8 +1,8 @@
 import aiohttp
 import config
-from image import format_emote_for_discord
-from . import Emote
-from .errors import *
+from api import Emote
+from api.errors import *
+from api.image import format_emote_for_discord
 
 _api_endpoint = f"{config.SEVEN_TV_API_URL}/{config.SEVEN_TV_API_VERSION}"
 
