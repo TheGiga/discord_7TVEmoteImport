@@ -63,13 +63,6 @@ async def on_application_command_error(ctx: SubApplicationContext, error):
             ctx, error, custom_message=":x: Failed to read JSON for this Emote, most likely Invalid URL!"
         )
 
-    elif isinstance(error, discord.HTTPException):
-        if error.code == 50138:
-            return await send_error_response(
-                ctx, error,
-                custom_message=f":x: Failed to resize the emote below the maximum size of {config.EMOJI_SIZE_LIMIT}."
-            )
-
     else:
         await send_error_response(ctx, error)
         raise error
