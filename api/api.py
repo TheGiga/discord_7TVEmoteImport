@@ -12,7 +12,7 @@ class EmotesAPI:
         self._session: aiohttp.ClientSession = None  # type: ignore
 
     @staticmethod
-    def _get_fitting_emote_name(files: dict, animated: bool) -> str | None:
+    def _get_fitting_emote(files: dict, animated: bool) -> dict | None:
         for i in reversed(range(1, 5)):
             search_for = f"{i}x.png" if not animated else f"{i}x.gif"
 
@@ -23,7 +23,7 @@ class EmotesAPI:
                 if int(file.get("size")) > config.EMOJI_SIZE_LIMIT:
                     continue
 
-                return file.get("name")
+                return file
 
             continue
         else:
@@ -58,11 +58,11 @@ class EmotesAPI:
 
         animated = emote_json.get("animated", False)
 
-        fitting_emote_name = self._get_fitting_emote_name(emote_json["host"]["files"], animated)
-        fitting_emote_url = f"https:{emote_json['host']['url']}/{fitting_emote_name}"
-
-        if not fitting_emote_name:
+        fitting_emote = self._get_fitting_emote(emote_json["host"]["files"], animated)
+        if not fitting_emote:
             raise FailedToFindFittingEmote
+
+        fitting_emote_url = f"https:{emote_json['host']['url']}/{fitting_emote.get('name')}"
 
         r = await self._session.get(fitting_emote_url)
 
@@ -71,13 +71,20 @@ class EmotesAPI:
         else:
             raise EmoteBytesReadFail(f"Failed reading bytes from {fitting_emote_url}")
 
-        emote_bytes = format_emote_for_discord(emote_bytes, square_aspect_ratio)
+        width, height = int(fitting_emote.get('width')), int(fitting_emote.get('height'))
+
+        emote_bytes = format_emote_for_discord(
+            emote_bytes,
+            square_aspect_ratio
+        )
 
         return Emote(
             id=emote_json.get('id'),
             name=emote_json.get('name')[:32],
             format="gif" if animated else "png",
             animated=animated,
+            width=width,
+            height=height,
             emote_url=fitting_emote_url,
             emote_bytes=emote_bytes
         )

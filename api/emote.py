@@ -7,6 +7,8 @@ class Emote:
     name: str
     animated: bool
     format: str
+    width: int
+    height: int
 
     emote_url: str
     emote_bytes: bytes
