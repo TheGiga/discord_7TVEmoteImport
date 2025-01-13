@@ -13,21 +13,18 @@ class EmotesAPI:
 
     @staticmethod
     def _get_fitting_emote(files: dict, animated: bool) -> dict | None:
-        for i in reversed(range(1, 5)):
-            search_for = f"{i}x.png" if not animated else f"{i}x.gif"
+        search_for = f"4x.png" if not animated else f"3x.gif"
 
-            for file in files:
-                if not file.get("name") == search_for:
-                    continue
+        for file in reversed(files):
+            if not file.get("name") == search_for:
+                continue
 
-                if int(file.get("size")) > config.EMOJI_SIZE_LIMIT:
-                    continue
+            if not file.get("size") <= 400000:
+                search_for = f"3x.png" if not animated else f"2x.gif"
+                continue
 
-                return file
+            return file
 
-            continue
-        else:
-            return None
 
     async def create_session(self):
         self._session = aiohttp.ClientSession()
@@ -50,7 +47,7 @@ class EmotesAPI:
 
                 return response_json
 
-    async def emote_get(self, emote_id: str, square_aspect_ratio=False) -> Emote:
+    async def emote_get(self, emote_id: str, square_aspect_ratio=False, speed_up=False) -> Emote:
         emote_json = await self._emote_get(emote_id=emote_id)
 
         if not emote_json:
@@ -73,9 +70,10 @@ class EmotesAPI:
 
         width, height = int(fitting_emote.get('width')), int(fitting_emote.get('height'))
 
-        emote_bytes = format_emote_for_discord(
+        emote_bytes = await format_emote_for_discord(
             emote_bytes,
-            square_aspect_ratio
+            square_aspect_ratio,
+            speed_up
         )
 
         return Emote(

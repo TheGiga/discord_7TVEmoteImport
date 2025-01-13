@@ -32,6 +32,11 @@ class EmotesCog(discord.Cog):
                 str, description='Custom name for the emote (optional) [alphanumeric & _ only]', required=False,
                 max_length=32, min_length=2
             ) = None,
+            speed_up: discord.Option(
+                bool, description="Wether or not to bother slowing down the GIF if frames were skipped "
+                                  "(effectively speeding it up)",
+
+            ) = False,
             limit_to_role: discord.Option(
                 discord.Role, name='role', description="Limit to specific role!",
             ) = None
@@ -43,7 +48,7 @@ class EmotesCog(discord.Cog):
 
         emote_id = emote_url.split("/")[-1]
         try:
-            emote = await api_instance.emote_get(emote_id, fit_to_square)
+            emote = await api_instance.emote_get(emote_id, fit_to_square, speed_up)
         except Exception as e:
             await self.bot.on_application_command_error(ctx, e)  # type: ignore
             return
@@ -101,7 +106,7 @@ class EmotesCog(discord.Cog):
         embed.title = None
 
         await message.delete()
-        await ctx.send(content=ctx.author.mention, embed=embed)
+        await ctx.respond(content=ctx.author.mention, embed=embed, ephemeral=True)
 
     @command_subgroup_7tv_emote.command(
         name="remove", description="Remove a 7TV emote if it was added by you (or you are an admin)"
