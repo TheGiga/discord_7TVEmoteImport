@@ -152,7 +152,7 @@ class EmotesCog(discord.Cog):
         embed.description = f":x: **Removed emote `{emote.name}`** ({emote})"
 
         await message.delete()
-        await ctx.send(content=ctx.author.mention, embed=embed)
+        await ctx.respond(content=ctx.author.mention, embed=embed, ephemeral=True)
 
         await ctx.guild.delete_emoji(
             emote, reason=f'{ctx.author.name} ({ctx.author.id}) removed a 7TV Emote "{emote.name}" [{emote.id}]'
@@ -194,7 +194,7 @@ class EmotesCog(discord.Cog):
             color=discord.Color.embed_background()
         )
 
-        await ctx.respond(embed=embed, content=ctx.author.mention)
+        await ctx.respond(embed=embed, content=ctx.author.mention, ephemeral=True)
 
     @discord.Cog.listener()
     async def on_guild_emojis_update(
