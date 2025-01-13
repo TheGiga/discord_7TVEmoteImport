@@ -65,8 +65,7 @@ class EmotesCog(discord.Cog):
         embed = discord.Embed(
             thumbnail=emote.emote_url,
             title=emote.name,
-            description="**Are you sure you want to add this emote?**\n"
-                        "*GIFs might have artifacts due to <a:7tv:1306003780898132112> being ass.*",
+            description="**Are you sure you want to add this emote?**",
             color=discord.Color.embed_background()
         )
 
