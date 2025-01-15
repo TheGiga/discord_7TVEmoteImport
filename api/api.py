@@ -19,7 +19,7 @@ class EmotesAPI:
             if not file.get("name") == search_for:
                 continue
 
-            if not file.get("size") <= 400000:
+            if not file.get("size") <= 350000:
                 search_for = f"3x.png" if not animated else f"2x.gif"
                 continue
 
