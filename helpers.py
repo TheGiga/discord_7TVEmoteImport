@@ -62,7 +62,7 @@ async def commands_list_autocomplete(ctx: discord.AutocompleteContext):
 
 async def emote_list_autocomplete(ctx: discord.AutocompleteContext):
     return [
-        discord.OptionChoice(emote.name, str(emote.id)) for emote in ctx.interaction.guild.emojis
+        discord.OptionChoice(f"{emote.name} ({emote.id})", str(emote.id)) for emote in ctx.interaction.guild.emojis
         if emote.name.lower().startswith(ctx.value.lower())
     ]
 

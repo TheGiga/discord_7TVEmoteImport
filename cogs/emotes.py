@@ -1,6 +1,7 @@
 from typing import Sequence
 
 import discord
+from aiohttp.helpers import method_must_be_empty_body
 from discord import SlashCommandGroup
 from discord.ext.commands import bot_has_permissions
 
@@ -194,6 +195,36 @@ class EmotesCog(discord.Cog):
         )
 
         await ctx.respond(embed=embed, content=ctx.author.mention)#, ephemeral=True)
+
+    @command_subgroup_7tv_emote.command(
+        name='info', description="See info about an added emote on this server."
+    )
+    async def info_emote(
+            self, ctx: SubApplicationContext,
+            emote_id: discord.Option(
+                str, name='emote', description='Name of the emote to delete.', autocomplete=emote_list_autocomplete
+            ),
+    ):
+        if not await ctx.guild_settings.check_custom_permissions(ctx):
+            return await send_missing_custom_permissions_message(ctx)
+
+        emote = await ctx.guild_settings.get_emote_by_discord_id(int(emote_id))
+        discord_emote = await ctx.guild.fetch_emoji(int(emote_id))
+
+        if not emote:
+            return await ctx.respond(
+                ":x: There is no info regarding this emote, it was probably added manually.",
+                ephemeral=True
+            )
+
+        embed = discord.Embed(color=discord.Color.embed_background())
+        embed.title = f"{discord_emote}  {discord_emote.name} ({discord_emote.id})"
+        embed.description = f"[Check on 7TV](https://7tv.app/emotes/{emote['seventv_id']})"
+
+        embed.add_field(name='Added by:', value=f"<@{emote['author_id']}>")
+        embed.add_field(name='Animated:', value="✅" if emote['animated'] else ":x:")
+
+        await ctx.respond(embed=embed, ephemeral=True)
 
     @discord.Cog.listener()
     async def on_guild_emojis_update(

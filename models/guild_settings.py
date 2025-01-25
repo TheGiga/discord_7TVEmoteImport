@@ -109,7 +109,7 @@ class GuildSettings(Model):
         ]
 
     async def get_emote_by_discord_id(self, emote_id: int) -> dict | None:
-        return self.emotes.get(emote_id, None)
+        return self.emotes.get(str(emote_id), None)
 
     async def remove_emote(self, emote_id: int):
         popped = self.emotes.pop(str(emote_id), None)
